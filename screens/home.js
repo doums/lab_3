@@ -9,7 +9,6 @@ import withActionBar from '../components/withActionBar'
 import withUser from '../components/withUser'
 
 const Home = ({ theme, user, navigation: { navigate } }) => {
-  console.log('home')
   console.log(user)
   return (
     <View style={[ styles.container, { backgroundColor: theme.background } ]}>

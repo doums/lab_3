@@ -15,13 +15,19 @@ class ContextManager extends Component {
       theme: materialTheme,
       user: null
     }
+    this.unsubscribeUser = () => {}
   }
 
   componentDidMount () {
     this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({ user })
+        this.unsubscribeUser()
+        this.unsubscribeUser = firebase.firestore().collection('users').doc(user.uid)
+          .onSnapshot(doc => {
+            this.setState({ user: { ...doc.data(), id: user.uid }})
+          })
       } else {
+        this.unsubscribeUser()
         this.setState({ user: null })
       }
     })
@@ -33,6 +39,7 @@ class ContextManager extends Component {
 
   componentWillUnmount () {
     this.unsubscribeAuth()
+    this.unsubscribeUser()
   }
 
   render () {
