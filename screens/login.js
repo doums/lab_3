@@ -9,7 +9,9 @@ import { compose } from 'lodash/fp'
 import withTheme from '../components/withTheme'
 import withUser from '../components/withUser'
 import Button from '../components/button'
-import * as firebase from 'firebase'
+import firebase from 'firebase'
+import 'firebase/auth'
+import 'firebase/database'
 
 class Login extends Component {
   constructor (props) {
@@ -18,7 +20,8 @@ class Login extends Component {
       email: '',
       password: '',
       mod: 'login',
-      error: ''
+      error: '',
+      isBusy: false
     }
   }
 
@@ -27,27 +30,43 @@ class Login extends Component {
     if (user) replace('Navigator')
   }
 
-  login = () => {
-    const { email, password } = this.state
-    if (!email || !password) return
+  componentDidUpdate (prevProps) {
+    const { user, navigation: { replace } } = this.props
+    const { user: prevUser } = prevProps
+    if (user && !prevUser) replace('Navigator')
   }
 
-  signUp = () => {
-    const { email, password } = this.state
-    console.log("1")
-    if (!email || !password) return
-    console.log("2")
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(error => {
-      this.setState({ error })
-    })
+  login = async () => {
+    const { email, password, isBusy } = this.state
+    if (!email || !password || isBusy) return
+    this.setState({ isBusy: true })
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password)
+    } catch (e) {
+      this.setState({ error: e.message })
+    } finally {
+      this.setState({ isBusy: false })
+    }
+  }
+
+  signUp = async () => {
+    const { email, password, isBusy } = this.state
+    if (!email || !password || isBusy) return
+    this.setState({ isBusy: true })
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password)
+    } catch (e) {
+      this.setState({ error: e.message })
+    } finally {
+      this.setState({ isBusy: false })
+    }
   }
 
   render () {
     const { theme } = this.props
-    const { email, password, mod, error } = this.state
+    const { email, password, mod, error, isBusy } = this.state
     const textStyle = [ styles.text, { color: theme.onBackground } ]
-    const errorStyle = [ styles.text, { color: theme.error } ]
-    console.log(this.props)
+    const errorStyle = [ styles.text, { color: theme.error, marginBottom: 10 } ]
     return (
       < View style={[ styles.container, { backgroundColor: theme.background } ]}>
         { error.length > 0 &&
@@ -76,14 +95,14 @@ class Login extends Component {
         <Button
           text={mod === 'login' ? 'login' : 'sign up'}
           onPress={mod === 'login' ? this.login : this.signUp}
-          disabled={!email || !password}
+          disabled={!email || !password || isBusy}
         />
         <Text
           onPress={() => this.setState({ mod: mod === 'login' ? 'signUp' : 'login' })}
           style={textStyle}
         >
           { mod === 'login' ? 'or sign up' : 'or login' }
-          </Text>
+        </Text>
       </View>
     )
   }

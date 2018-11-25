@@ -19,9 +19,11 @@ class ContextManager extends Component {
 
   componentDidMount () {
     firebase.auth().onAuthStateChanged(user => {
-      console.log('auth observer triggered')
-      console.log(user)
-      this.setState({ user })
+      if (user) {
+        this.setState({ user })
+      } else {
+        this.setState({ user: null })
+      }
     })
   }
 

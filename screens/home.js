@@ -6,15 +6,20 @@ import {
 import { compose } from 'lodash/fp'
 import withTheme from '../components/withTheme'
 import withActionBar from '../components/withActionBar'
+import withUser from '../components/withUser'
 
-const Home = ({ theme, navigation: { navigate } }) => (
-  <View style={[ styles.container, { backgroundColor: theme.background } ]}>
-  </View>
-)
+const Home = ({ theme, user, navigation: { navigate } }) => {
+  console.log('home')
+  console.log(user)
+  return (
+    <View style={[ styles.container, { backgroundColor: theme.background } ]}>
+    </View>
+  )}
 
 export default compose(
   withActionBar,
-  withTheme
+  withTheme,
+  withUser
 )(Home)
 
 const styles = StyleSheet.create({
