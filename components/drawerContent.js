@@ -4,6 +4,9 @@ import withTheme from './withTheme'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import findRouteIcon from '../helpers/findRouteIcon'
 import findScreenTitle from '../helpers/findScreenTitle'
+import firebase from 'firebase'
+import { NavigationActions, withNavigation } from 'react-navigation'
+import { compose } from 'lodash/fp'
 
 const DrawerItem = ({ item, activeItem, theme, navigation }) => {
   let focused = false
@@ -31,6 +34,14 @@ const DrawerItem = ({ item, activeItem, theme, navigation }) => {
 
 const DrawerContent = React.memo(props => {
   const { items, theme, activeItem, navigation } = props
+  const signOut = async () => {
+    try {
+      await firebase.auth().signOut()
+      navigation.reset([NavigationActions.navigate({ routeName: 'Login' })], 0)
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={[ styles.title, { color:theme.onPrimary } ]}>App</Text>
@@ -46,10 +57,30 @@ const DrawerContent = React.memo(props => {
           />
         )}
       />
+      <View style={styles.itemContainer}>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.SelectableBackground()}
+          onPress={() => signOut()}
+        >
+          <View style={[ styles.activeOverlay, { backgroundColor: theme.primary } ]}>
+            <View style={styles.navigationIcon}>
+              <Icon
+                name='highlight-off'
+                size={24}
+                color={theme.onPrimary}
+              />
+            </View>
+            <Text style={[ styles.itemLabel, { color: theme.onPrimary } ]}>Sign out</Text>
+          </View>
+        </TouchableNativeFeedback>
+      </View>
     </View>
   )
 })
-export default withTheme(DrawerContent)
+export default compose(
+  withTheme,
+  withNavigation
+)(DrawerContent)
 
 const styles = StyleSheet.create({
   container: {

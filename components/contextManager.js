@@ -18,7 +18,7 @@ class ContextManager extends Component {
   }
 
   componentDidMount () {
-    firebase.auth().onAuthStateChanged(user => {
+    this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({ user })
       } else {
@@ -30,6 +30,10 @@ class ContextManager extends Component {
   setTheme = theme => this.setState({ theme })
 
   setUser = user => this.setState({ user })
+
+  componentWillUnmount () {
+    this.unsubscribeAuth()
+  }
 
   render () {
     const { theme, user } = this.state

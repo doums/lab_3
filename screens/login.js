@@ -12,13 +12,14 @@ import Button from '../components/button'
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/database'
+import Spinner from '../components/spinner'
 
 class Login extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      email: '',
-      password: '',
+      email: 'toto@toto.toto',
+      password: 'tototo',
       mod: 'login',
       error: '',
       isBusy: false
@@ -27,13 +28,13 @@ class Login extends Component {
 
   componentDidMount () {
     const { user, navigation: { replace } } = this.props
-    if (user) replace('Navigator')
+    if (user) replace('AuthNavigator')
   }
 
   componentDidUpdate (prevProps) {
     const { user, navigation: { replace } } = this.props
     const { user: prevUser } = prevProps
-    if (user && !prevUser) replace('Navigator')
+    if (user && !prevUser) replace('AuthNavigator')
   }
 
   login = async () => {
@@ -44,7 +45,6 @@ class Login extends Component {
       await firebase.auth().signInWithEmailAndPassword(email, password)
     } catch (e) {
       this.setState({ error: e.message })
-    } finally {
       this.setState({ isBusy: false })
     }
   }
@@ -57,7 +57,6 @@ class Login extends Component {
       await firebase.auth().createUserWithEmailAndPassword(email, password)
     } catch (e) {
       this.setState({ error: e.message })
-    } finally {
       this.setState({ isBusy: false })
     }
   }
@@ -67,6 +66,7 @@ class Login extends Component {
     const { email, password, mod, error, isBusy } = this.state
     const textStyle = [ styles.text, { color: theme.onBackground } ]
     const errorStyle = [ styles.text, { color: theme.error, marginBottom: 10 } ]
+    if (isBusy) return <Spinner/>
     return (
       < View style={[ styles.container, { backgroundColor: theme.background } ]}>
         { error.length > 0 &&
@@ -95,7 +95,7 @@ class Login extends Component {
         <Button
           text={mod === 'login' ? 'login' : 'sign up'}
           onPress={mod === 'login' ? this.login : this.signUp}
-          disabled={!email || !password || isBusy}
+          disabled={!email || !password}
         />
         <Text
           onPress={() => this.setState({ mod: mod === 'login' ? 'signUp' : 'login' })}
