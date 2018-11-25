@@ -1,4 +1,5 @@
 import React from 'react'
+import { YellowBox } from 'react-native';
 import ContextManager from './components/contextManager'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -13,6 +14,8 @@ const config = {
   messagingSenderId: '97742818833'
 }
 firebase.initializeApp(config)
+
+YellowBox.ignoreWarnings(['Setting a timer'])
 
 const db = firebase.firestore()
 // Disable deprecated features
