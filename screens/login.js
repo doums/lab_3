@@ -9,7 +9,7 @@ import { compose } from 'lodash/fp'
 import withTheme from '../components/withTheme'
 import withUser from '../components/withUser'
 import Button from '../components/button'
-import firebase from 'firebase'
+import firebase from 'react-native-firebase'
 import Spinner from '../components/spinner'
 
 class Login extends Component {
@@ -26,14 +26,24 @@ class Login extends Component {
   }
 
   componentDidMount () {
-    const { user, navigation: { replace } } = this.props
-    if (user) replace('AuthNavigator')
+    const { navigation: { replace }, setUser } = this.props
+    this.unsubscribeAuth = firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        try {
+          const userPayload = await firebase.firestore().collection('users').doc(user.uid).get()
+          setUser({ ... userPayload.data(), id: user.uid })
+          replace('AuthNavigator')
+        } catch (e) {
+          console.log(e.message)
+        }
+      } else {
+        setUser(null)
+      }
+    })
   }
 
-  componentDidUpdate (prevProps) {
-    const { user, navigation: { replace } } = this.props
-    const { user: prevUser } = prevProps
-    if (user && !prevUser) replace('AuthNavigator')
+  componentWillUnmount () {
+    this.unsubscribeAuth()
   }
 
   login = async () => {

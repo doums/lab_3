@@ -1,27 +1,8 @@
 import React from 'react'
-import { YellowBox } from 'react-native';
 import ContextManager from './components/contextManager'
-import firebase from 'firebase'
-import 'firebase/auth'
-import 'firebase/firestore'
+import { YellowBox } from 'react-native'
 
-const config = {
-  apiKey: 'AIzaSyBJDNaUFoJdY04vSGWPy1YeklFMBUK5R4w',
-  authDomain: 'lab-3-dd17c.firebaseapp.com',
-  databaseURL: 'https://lab-3-dd17c.firebaseio.com',
-  projectId: 'lab-3-dd17c',
-  storageBucket: 'lab-3-dd17c.appspot.com',
-  messagingSenderId: '97742818833'
-}
-firebase.initializeApp(config)
-
-YellowBox.ignoreWarnings(['Setting a timer'])
-
-const db = firebase.firestore()
-// Disable deprecated features
-db.settings({
-  timestampsInSnapshots: true
-})
+YellowBox.ignoreWarnings(['Require cycle:'])
 
 const App = () => {
   return <ContextManager />

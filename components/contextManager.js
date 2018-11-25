@@ -5,7 +5,6 @@ import {
 } from 'react-native'
 import ThemeContext, { materialTheme } from '../constants/themeContext'
 import UserContext from '../constants/userContext'
-import firebase from 'firebase'
 import RootNavigator from './rootNavigator'
 
 class ContextManager extends Component {
@@ -15,32 +14,11 @@ class ContextManager extends Component {
       theme: materialTheme,
       user: null
     }
-    this.unsubscribeUser = () => {}
-  }
-
-  componentDidMount () {
-    this.unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.unsubscribeUser()
-        this.unsubscribeUser = firebase.firestore().collection('users').doc(user.uid)
-          .onSnapshot(doc => {
-            this.setState({ user: { ...doc.data(), id: user.uid }})
-          })
-      } else {
-        this.unsubscribeUser()
-        this.setState({ user: null })
-      }
-    })
   }
 
   setTheme = theme => this.setState({ theme })
 
   setUser = user => this.setState({ user })
-
-  componentWillUnmount () {
-    this.unsubscribeAuth()
-    this.unsubscribeUser()
-  }
 
   render () {
     const { theme, user } = this.state

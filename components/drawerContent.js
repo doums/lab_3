@@ -4,7 +4,7 @@ import withTheme from './withTheme'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import findRouteIcon from '../helpers/findRouteIcon'
 import findScreenTitle from '../helpers/findScreenTitle'
-import firebase from 'firebase'
+import firebase from 'react-native-firebase'
 import { NavigationActions, withNavigation } from 'react-navigation'
 import { compose } from 'lodash/fp'
 
