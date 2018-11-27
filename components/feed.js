@@ -10,6 +10,7 @@ import withTheme from './withTheme'
 import withUser from './withUser'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import firebase from 'react-native-firebase'
+import { timeDifferenceForDate } from '../helpers/timeDifference'
 
 class Feed extends Component {
   constructor (props) {
@@ -17,23 +18,18 @@ class Feed extends Component {
     this.state = {
       messages: []
     }
-    this.listRef = React.createRef()
   }
 
   componentDidMount () {
     this.unsubscribe = firebase.firestore().collection('messages')
       .onSnapshot(querySnapshot => {
-        const messages = []
+        let messages = []
         querySnapshot.forEach(async doc => {
           messages.push({ key: doc.id, ...doc.data() })
-
         })
+        messages = messages.sort((a, b) => b.createdAt - a.createdAt)
         this.setState({ messages })
       })
-  }
-
-  componentDidUpdate (prevProps, prevState, snapshot) {
-
   }
 
   componentWillUnmount () {
@@ -43,43 +39,42 @@ class Feed extends Component {
   renderItem = ({ item }) => {
     const { theme, user } = this.props
     const textStyle = [ styles.text, { color: theme.onBackground } ]
-    const rowStyle = {}
-    if (user.id === item.author.id) {
-      rowStyle.alignSelf = 'flex-end'
-    }
+    let isAuthor = user.id === item.author.id
+    const isAuthorStyle = { color: theme.onBackground, textAlign: isAuthor ? 'right' : 'left' }
     return (
-      <View style={[ styles.row, rowStyle ]}>
+      <View style={[ styles.row, isAuthor && { alignSelf: 'flex-end' } ]}>
         <View style={[ styles.messageWrapper ]}>
-          <Text style={[ styles.author, { color: theme.onBackground } ]}>{ item.author.username }</Text>
-          <Text style={textStyle}>{ item.message }</Text>
+          <Text style={[ styles.author, isAuthorStyle ]}>
+            { item.author.username }
+          </Text>
+          <Text style={[ styles.date, isAuthorStyle ]}>
+            {timeDifferenceForDate(item.createdAt)}
+          </Text>
+          <Text style={[ textStyle, isAuthorStyle ]}>{ item.message }</Text>
         </View>
         {
           user.id === item.author.id &&
-          <View style={styles.moreIcon}>
-            <Icon
-              name='more-horiz'
-              size={24}
-              color={theme.primary}
-              onPress={() => {}}
-            />
-          </View>
+          <Icon
+            name='more-horiz'
+            size={24}
+            color={theme.primary}
+            onPress={() => {}}
+          />
         }
       </View>
     )
   }
 
   render () {
-    const { theme } = this.props
     const { messages } = this.state
     console.log(messages)
     return (
-      <View style={[ styles.container, { borderColor: theme.onBackground } ]}>
+      <View style={[ styles.container  ]}>
         <FlatList
           inverted
           data={messages}
           renderItem={this.renderItem}
           style={styles.list}
-          ref={this.listRef}
           contentContainerStyle={{ paddingBottom: 30 }}
         />
       </View>
@@ -97,9 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    borderWidth: 1,
-    marginBottom: 10
+    alignItems: 'flex-end'
   },
   text: {
     fontSize: 16,
@@ -109,7 +102,12 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 16,
     paddingHorizontal: 10,
-    fontFamily: 'Lekton-Bold'
+    fontFamily: 'Montserrat-SemiBold'
+  },
+  date: {
+    fontSize: 12,
+    paddingHorizontal: 10,
+    fontFamily: 'Montserrat-LightItalic'
   },
   list: {
     padding: 20
@@ -121,10 +119,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10
   },
-  moreIcon: {
-    marginLeft: 'auto'
-  },
   messageWrapper: {
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flex: 1
   }
 })

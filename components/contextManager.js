@@ -31,7 +31,7 @@ class ContextManager extends Component {
       setUser: this.setUser
     }
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
         <StatusBar
           barStyle='light-content'
           backgroundColor={theme.primaryDark}

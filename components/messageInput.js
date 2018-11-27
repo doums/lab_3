@@ -17,6 +17,7 @@ class MessageInput extends Component {
       message: '',
       isBusy: false
     }
+    this.inputRef = React.createRef()
   }
 
   componentDidMount () {
@@ -37,11 +38,13 @@ class MessageInput extends Component {
   send = () => {
     const { user: { id: userId, username } } = this.props
     const { message, isBusy } = this.state
-    if (isBusy || message.trim().length === 0) return
-    this.setState({ isBusy: true }, async () => {
+    const messageCopy = message.trim()
+    if (isBusy || messageCopy.length === 0) return
+    this.inputRef.current.blur()
+    this.setState({ isBusy: true, message: '' }, async () => {
       try {
         await firebase.firestore().collection('messages').add({
-          message: message.trim(),
+          message: messageCopy,
           createdAt: Date.now(),
           updatedAt: Date.now(),
           author: {
@@ -71,6 +74,8 @@ class MessageInput extends Component {
           placeholderTextColor={theme.onBackground}
           onChangeText={message => this.setState({ message })}
           value={message}
+          onSubmitEditing={this.send}
+          ref={this.inputRef}
         />
         <View style={ styles.sendIconWrapper }>
           <View style={styles.sendIcon}>
@@ -98,7 +103,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     height: 100
   },
   text: {

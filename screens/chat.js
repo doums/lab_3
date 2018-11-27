@@ -29,8 +29,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-end',
-    padding: 10
+    justifyContent: 'flex-end'
   },
   text: {
     fontSize: 16,
