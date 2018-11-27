@@ -7,11 +7,15 @@ import { compose } from 'lodash/fp'
 import withTheme from '../components/withTheme'
 import withActionBar from '../components/withActionBar'
 import withUser from '../components/withUser'
+import MessageInput from '../components/messageInput'
+import Feed from '../components/feed'
 
 const Chat = ({ theme, user, navigation: { navigate } }) => {
   console.log(user)
   return (
     <View style={[ styles.container, { backgroundColor: theme.background } ]}>
+      <Feed/>
+      <MessageInput/>
     </View>
   )}
 
@@ -24,9 +28,9 @@ export default compose(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    padding: 10
   },
   text: {
     fontSize: 16,

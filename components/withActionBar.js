@@ -66,11 +66,11 @@ const withActionBar = WrappedComponent => {
               </View>
             </View>
           </View>
-          <ScrollView
-            contentContainerStyle={[styles.scrollViewContainer, {backgroundColor: theme.background}]}
+          <View
+            style={[styles.scrollViewContainer, {backgroundColor: theme.background}]}
           >
             <WrappedComponent {...this.props} actionBar={actionBarProps}/>
-          </ScrollView>
+          </View>
         </View>
       )
     }
@@ -102,9 +102,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lekton-Bold'
   },
   scrollViewContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flexGrow: 1
   },
   actionItems: {
     marginLeft: 'auto'
