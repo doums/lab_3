@@ -16,9 +16,10 @@ class Login extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      email: 'toto@toto.toto',
-      username: 'toto',
-      password: 'tototo',
+      email: '',
+      username: '',
+      password: '',
+      passwordCheck: '',
       mod: 'login',
       error: '',
       isBusy: false
@@ -48,7 +49,7 @@ class Login extends Component {
 
   login = async () => {
     const { email, password, isBusy } = this.state
-    if (!email || !password || isBusy) return
+    if (!this.formIsValid() || isBusy) return
     this.setState({ isBusy: true })
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password)
@@ -59,8 +60,12 @@ class Login extends Component {
   }
 
   signUp = async () => {
-    const { email, password, isBusy, username } = this.state
-    if (!email || !password || !username || isBusy) return
+    const { email, password, passwordCheck, isBusy, username } = this.state
+    if (!this.formIsValid() || isBusy) return
+    if (password !== passwordCheck) {
+      this.setState({ error: 'Passwords mismatch' })
+      return
+    }
     this.setState({ isBusy: true })
     try {
       const userPayload = await firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -75,14 +80,22 @@ class Login extends Component {
   }
 
   formIsValid = () => {
-    const { email, username, password, mod } = this.state
+    const { email, username, password, passwordCheck, mod } = this.state
     if (mod === 'login') return Boolean(email && password)
-    return Boolean(email && password && username)
+    return Boolean(email && password && passwordCheck && username)
   }
 
   render () {
     const { theme } = this.props
-    const { email, username, password, mod, error, isBusy } = this.state
+    const {
+      email,
+      username,
+      password,
+      passwordCheck,
+      mod,
+      error,
+      isBusy
+    } = this.state
     const textStyle = [ styles.text, { color: theme.onBackground } ]
     const errorStyle = [ styles.text, { color: theme.error, marginBottom: 10 } ]
     if (isBusy) return <Spinner/>
@@ -120,6 +133,15 @@ class Login extends Component {
           onChangeText={password => this.setState({ password })}
           value={password}
         />
+        {mod === 'signUp' &&
+        <TextInput
+          style={[ styles.text, styles.textInput, { color: theme.onBackground, borderColor: theme.onBackground } ]}
+          placeholder='retype password'
+          placeholderTextColor={theme.onBackground}
+          onChangeText={passwordCheck => this.setState({ passwordCheck })}
+          value={passwordCheck}
+        />
+        }
         <Button
           text={mod === 'login' ? 'login' : 'sign up'}
           onPress={mod === 'login' ? this.login : this.signUp}

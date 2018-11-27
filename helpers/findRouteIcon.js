@@ -1,6 +1,6 @@
 export default function findRouteIcon (routeName) {
   switch (routeName) {
-    case 'Home':
-      return 'home'
+    case 'Chat':
+      return 'message'
   }
 }

@@ -8,7 +8,7 @@ import withTheme from '../components/withTheme'
 import withActionBar from '../components/withActionBar'
 import withUser from '../components/withUser'
 
-const Home = ({ theme, user, navigation: { navigate } }) => {
+const Chat = ({ theme, user, navigation: { navigate } }) => {
   console.log(user)
   return (
     <View style={[ styles.container, { backgroundColor: theme.background } ]}>
@@ -19,7 +19,7 @@ export default compose(
   withActionBar,
   withTheme,
   withUser
-)(Home)
+)(Chat)
 
 const styles = StyleSheet.create({
   container: {

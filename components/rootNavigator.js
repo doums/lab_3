@@ -3,7 +3,7 @@ import Login from '../screens/login'
 import withTheme from './withTheme'
 import { ScrollView } from 'react-native'
 import DrawerContent from './drawerContent'
-import Home from '../screens/home'
+import Chat from '../screens/chat'
 import React from 'react'
 
 const ContentComponent = withTheme(props => {
@@ -22,9 +22,9 @@ const ContentComponent = withTheme(props => {
 })
 
 const AuthNavigator = createDrawerNavigator({
-  Home: Home
+  Chat: Chat
 }, {
-  initialRouteName: 'Home',
+  initialRouteName: 'Chat',
   contentComponent: ContentComponent
 })
 
